@@ -58,9 +58,10 @@ Outputs relevantes: `db_endpoint`, `jdbc_url`, `reactive_url`, `vpc_id`, `subnet
 ## Pré-requisitos (uma vez)
 
 1. Criar manualmente um bucket S3 (nome único) para o state, com versionamento habilitado.
-2. Configurar no GitHub (organização ou repositório):
+2. Criar os GitHub Environments `homolog` e `production` e configurar em cada um:
    - **Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` (Learner Lab, expiram em ~4h) e `DB_PASSWORD`.
    - **Variables**: `AWS_REGION` (`us-east-1`) e `TF_STATE_BUCKET` (nome do bucket do passo 1).
+   - Configure as regras de aprovação do Environment conforme a política de promoção do time.
 
 ## Execução local
 
@@ -81,11 +82,12 @@ Para alternar de ambiente, rode `terraform init -reconfigure` com a `key` corres
 
 `.github/workflows/terraform.yml`:
 
-- **Pull Request**: `terraform fmt -check`, `validate` e `plan` (homolog e production, em paralelo).
+- **Pull Request**: `terraform fmt -check` e `validate` sem credenciais para todos os PRs. PRs de branches do mesmo repositório, abertos por `OWNER`, `MEMBER` ou `COLLABORATOR`, também executam `plan` para homolog e production, cada um com o Environment e state correspondentes; PRs de forks e autores sem associação confiável não recebem acesso AWS.
 - **Push em `homolog`**: `terraform apply` com `envs/homolog.tfvars`.
 - **Push em `production`**: `terraform apply` com `envs/production.tfvars`.
+- **Execução manual**: `workflow_dispatch` reaplica o ambiente selecionado quando o workflow é iniciado na branch de mesmo nome, útil após renovar as credenciais temporárias do Learner Lab.
 
-Se o lab for reiniciado, atualize os três secrets `AWS_*` antes de rodar o pipeline.
+Se o lab for reiniciado, atualize os três secrets `AWS_*` nos Environments antes de rodar o pipeline.
 
 ## Documentação relacionada
 
