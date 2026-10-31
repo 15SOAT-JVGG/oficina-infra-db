@@ -3,6 +3,11 @@ output "db_endpoint" {
   value       = aws_db_instance.database.endpoint
 }
 
+output "db_identifier" {
+  description = "Identificador do RDS, usado para consultar as métricas nativas no CloudWatch."
+  value       = aws_db_instance.database.identifier
+}
+
 output "db_address" {
   description = "Host do PostgreSQL."
   value       = aws_db_instance.database.address

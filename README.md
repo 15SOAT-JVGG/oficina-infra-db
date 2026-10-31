@@ -70,8 +70,8 @@ Outputs relevantes: `db_endpoint`, `jdbc_url`, `reactive_url`, `vpc_id`, `subnet
 
 1. Criar manualmente um bucket S3 (nome único) para o state, com versionamento habilitado.
 2. Criar os GitHub Environments `homolog` e `production` e configurar em cada um:
-   - **Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` (Learner Lab, expiram em ~4h) e `DB_PASSWORD`.
-   - **Variables**: `AWS_REGION` (`us-east-1`) e `TF_STATE_BUCKET` (nome do bucket do passo 1).
+   - **Secrets**: `DB_PASSWORD` e, em `production`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`. Homolog usa os secrets Organization `HOMOLOG_AWS_ACCESS_KEY_ID`, `HOMOLOG_AWS_SECRET_ACCESS_KEY` e `HOMOLOG_AWS_SESSION_TOKEN`, restritos aos quatro repositórios; expiram em ~4h.
+   - **Variables**: `AWS_REGION` e `TF_STATE_BUCKET` já existem como variables da Organization. Variables de Environment com o mesmo nome têm precedência.
    - Configure as regras de aprovação do Environment conforme a política de promoção do time.
 
 ## Execução local
@@ -98,7 +98,7 @@ Para alternar de ambiente, rode `terraform init -reconfigure` com a `key` corres
 - **Push em `production`**: `terraform apply` com `envs/production.tfvars`.
 - **Execução manual**: `workflow_dispatch` reaplica o ambiente selecionado quando o workflow é iniciado na branch de mesmo nome, útil após renovar as credenciais temporárias do Learner Lab.
 
-Se o lab for reiniciado, atualize os três secrets `AWS_*` nos Environments antes de rodar o pipeline.
+Se o lab for reiniciado, renove os secrets `HOMOLOG_AWS_*` da Organization e os `AWS_*` do Environment `production` antes de rodar as pipelines.
 
 ## Documentação relacionada
 
